@@ -17,12 +17,8 @@ class BatchTranslationRequest(BaseModel):
     texts: List[str]
     target_language: str
 
-class TranslatedItem(BaseModel):
-    original_text: str
-    translated_text: str
-
 class BatchTranslationResponse(BaseModel):
-    translations: List[TranslatedItem]
+    translations: List[str]
     target_language: str
 
 class Language(BaseModel):
@@ -36,13 +32,9 @@ async def translate_text(request: BatchTranslationRequest):
         params = {
             "key": API_KEY,
             "target": request.target_language,
-            "q": request.texts  # This was missing - need to send all texts in the params
+            "q": request.texts
         }
 
-        # Note: Removed the source_language check since it's not in the request model
-        # If you want source language, add it to the BatchTranslationRequest model
-
-        # Make the API request
         async with httpx.AsyncClient() as client:
             response = await client.post(BASE_URL, params=params)
 
@@ -52,7 +44,6 @@ async def translate_text(request: BatchTranslationRequest):
                 detail=f"Translation API Error: {response.text}",
             )
 
-        # Parse the response
         result = response.json()
 
         if "data" not in result or "translations" not in result["data"]:
@@ -60,20 +51,11 @@ async def translate_text(request: BatchTranslationRequest):
                 status_code=500,
                 detail="Unexpected response format from Translation API",
             )
-
-        # Removed unnecessary line that was accessing translations[0]
         
-        # Combine original texts with translations
-        translations = []
-        for original_text, translation in zip(
-            request.texts, result["data"]["translations"]
-        ):
-            translations.append(
-                TranslatedItem(
-                    original_text=original_text,
-                    translated_text=translation["translatedText"],
-                )
-            )
+        translations = [
+            translation["translatedText"] 
+            for translation in result["data"]["translations"]
+        ]
 
         return BatchTranslationResponse(
             translations=translations,
