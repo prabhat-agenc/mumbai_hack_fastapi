@@ -17,7 +17,7 @@ DB_NAME = os.getenv("DB_NAME")
 # Connect to database
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
-feedback_collection = db["Feedback"]
+feedback_collection = db["feedbacks"]
 
 user_type_collections = {
     "ServiceProvider": "serviceproviders",
@@ -73,7 +73,7 @@ def feedback_summary(user_id):
             {"$set": {"feedBackSummary": feedback_summary_text}},
             upsert=True,  # Create the document if it doesn't exist
         )
-        print(summary_collection_update)
+        print(feedback_summary_text)
 
         return "success"
     except Exception as e:
