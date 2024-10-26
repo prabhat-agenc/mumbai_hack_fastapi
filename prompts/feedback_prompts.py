@@ -8,7 +8,7 @@ feedback_prompt = PromptTemplate(
         
         If no data is provided, return an empty string.
         
-        I want to display the short and clear summary of the feedbacks for a particular user above in its profile section as a summary of all the feedbacks.
+        I want to display a short and clear summary of the feedbacks for a particular user above in its profile section as a summary of all the feedbacks.
         Strict: Do not include any extra information. The output should be displayable as it is.
         '''
     ),
